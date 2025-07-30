@@ -1,4 +1,4 @@
-# mitiagate_bias
+# mitigate_bias
 
 In this project we try to mitigate bias in LLMs by introdusing multi-agents using think tools. 
 
