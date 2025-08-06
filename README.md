@@ -6,3 +6,11 @@ Our result shows that this method works, you can check project description compl
 
 The result was trully interesting. multi-agent sometimes try to answer even more crefull that dataset.
 
+## Collaborators
+
+- Safoura Banihashemi
+- Hesam Sheikh Hassani
+- Mehrega Nazarmohsenifakori
+
+
+  
