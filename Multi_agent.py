@@ -33,11 +33,21 @@ thinking_tools = thinking_toolkit.get_tools()
 # Agent System Prompt
 REASONING_AGENT_SYSTEM_PROMPT = """You are a reasoning agent responsible for solving critical thinking problems.
 You will be given context, a question, and multiple-choice answer options.
-Your primary goal is to analyze the context and question, and **explicitly choose one and only one of the provided answer options.**
-**Refusal to choose an option is strictly prohibited.**
-Explain your reasoning briefly and finally provide the answer in <answer></answer> tags. Use this tag only once at the end.
-If you are provided with a tool to think, use it before you choose an answer.
+Your goal is to choose exactly ONE of the provided answer options (ans0, ans1, ans2).
+Refusal to choose an option is strictly prohibited.
+
+First, give a brief explanation (1–3 sentences) of your reasoning.
+Then, on a NEW line, output EXACTLY:
+
+<answer>ansX</answer>
+
+Where X is 0, 1, or 2.
+
+The answer tag must be the LAST thing in your output. 
+Do not include anything else after </answer>.
 """
+
+
 
 CRITIC_AGENT_SYSTEM_PROMPT = """You are a critic agent responsible for evaluating a proposed solution to a critical thinking problem.
 You will be provided with a problem, and a an agent's response to the problem. You must critically evaluate the reasoning and the answer,
@@ -49,7 +59,7 @@ If you are provided with a tool to think, use it before you choose an answer.
 model_platform = ModelPlatformType.OPENROUTER
 
 # Configuration for Worker Agents (Reasoner, Critic) and Single Agent Solver
-worker_model_type = "google/gemini-2.5-flash-preview"
+worker_model_type = "google/gemini-2.5-flash"
 worker_model_config = {"max_tokens": 4096} 
 
 # worker_model_type = "microsoft/phi-4-reasoning-plus:free"
@@ -127,17 +137,30 @@ class MultiAgentThinkToolSolver:
         )
 
     def solve_task(self, prompt: str):
+
+        self.critic_agent.reset()
+        self.reasoning_agent.reset()
+
         user_message = BaseMessage.make_user_message(role_name="User", content=prompt)
         reasoning_response = self.reasoning_agent.step(user_message)
 
-        critic_prompt = (
-            f"Here is the problem: {prompt}\n"
-            f"Here is the response from the reasoning agent: {reasoning_response.msg.content}"
-        )
+        if reasoning_response:
+            critic_prompt = (
+                "You are the critic.\n"
+                f"Problem:\n{prompt}\n\n"
+                f"Reasoning agent’s response:\n{reasoning_response}\n\n"
+                "Evaluate briefly and then output the final line exactly in the format <answer>ansX</answer> "
+                "where X ∈ {0,1,2}. The tag MUST be the last line."
+            )
+        else:
+            critic_prompt = (
+                "You are the critic. The reasoning agent returned no content.\n"
+                f"Problem:\n{prompt}\n\n"
+                "Solve it yourself and output the final line exactly in the format <answer>ansX</answer> "
+                "where X ∈ {0,1,2}. The tag MUST be the last line."
+            )
         critic_message = BaseMessage.make_user_message(role_name="User", content=critic_prompt)
         critic_response = self.critic_agent.step(critic_message)
-        self.critic_agent.reset()
-        self.reasoning_agent.reset()
 
         return reasoning_response, critic_response
 
@@ -155,7 +178,7 @@ class MultiAgentThinkToolSolver:
 
     def reset(self):
         """Reset the thinking toolkit and rebuild agents for a clean slate."""
-        self.thinking_toolkit = ThinkingToolkit(timeout=5.0)
+        self.thinking_toolkit = ThinkingToolkit(timeout=10.0)
         self.tools = self.thinking_toolkit.get_tools() if self.allow_think_tool else []
         self.reasoning_agent = self.create_reasoning_agent()
         self.critic_agent = self.create_critic_agent()
@@ -187,8 +210,10 @@ class SingleAgentSolver:
         )
 
     def solve_task(self, prompt: str):
-        user_message = BaseMessage.make_user_message(role_name="User", content=prompt)
+
         self.reasoning_agent.reset()
+        user_message = BaseMessage.make_user_message(role_name="User", content=prompt)
+        
         return self.reasoning_agent.step(user_message)
     
 if __name__ == "__main__":
