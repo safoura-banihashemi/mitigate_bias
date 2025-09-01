@@ -16,8 +16,6 @@ We analyze model behavior using three main evaluation metrics:
 
 You can access the full project description and methodology [here](Mitigate_bias.pdf).
 
----
-
 ## Dataset  
 
 We use the **BBQ dataset**, a hand-crafted benchmark designed to expose social biases in LLMs.  
@@ -34,8 +32,6 @@ The dataset has two conditions:
 - **Ambiguous samples** – under-informative contexts where **UNKNOWN** is typically correct.  
 - **Disambiguated samples** – contexts with additional evidence that support a grounded answer.  
 
----
-
 ## Agent System  
 
 The agent configurations are implemented in [`Multi_agent.py`](./Multi_agent.py):  
@@ -43,8 +39,6 @@ The agent configurations are implemented in [`Multi_agent.py`](./Multi_agent.py)
 - **Single Agent** – one reasoning agent solving tasks independently.  
 - **Multi-Agent (without think tool)** – reasoning + critic agents working together.  
 - **Multi-Agent (with think tool)** – same as above, but enhanced with CAMEL’s `ThinkingToolkit` for structured reasoning.  
-
----
 
 ## Collaborators  
 
