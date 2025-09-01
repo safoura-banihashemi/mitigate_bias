@@ -1,16 +1,57 @@
-# mitigate_bias
+# Mitigating Bias  
 
-In this project we try to mitigate bias in LLMs by introdusing multi-agents using think tools. 
+This project investigates **bias in large language models (LLMs)** using three different setups:  
 
-Our result shows that this method works, you can check project description completely here.
+- **Single Agent**  
+- **Multi-Agent with Think Tool**  
+- **Multi-Agent without Think Tool**  
 
-The result was trully interesting. multi-agent sometimes try to answer even more crefull that dataset.
+All systems are implemented with the **[CAMEL framework](https://github.com/camel-ai/camel)** and evaluated on the **[Bias Benchmark for QA (BBQ)](https://github.com/nyu-mll/BBQ)** dataset.  
 
-## Collaborators
+We analyze model behavior using three main evaluation metrics:  
 
-- Safoura Banihashemi
-- Hesam Sheikh Hassani
-- Mehrega Nazarmohsenifakori
+- **Accuracy** – measures correctness of model predictions  
+- **Evidence Sensitivity** – evaluates reliance on additional evidence  
+- **Bias Score** – quantifies biased vs. unbiased tendencies in responses  
+
+You can access the full project description and methodology [here](Mitigate_bias.pdf).
+
+---
+
+## Dataset  
+
+We use the **BBQ dataset**, a hand-crafted benchmark designed to expose social biases in LLMs.  
+
+Each sample in the dataset includes:  
+- **Context** – a short scenario  
+- **Question** – related to the context  
+- **Answer Options:**  
+  - Targeted bias option  
+  - Non-targeted bias option  
+  - UNKNOWN option  
+
+The dataset has two conditions:  
+- **Ambiguous samples** – under-informative contexts where **UNKNOWN** is typically correct.  
+- **Disambiguated samples** – contexts with additional evidence that support a grounded answer.  
+
+---
+
+## Agent System  
+
+The agent configurations are implemented in [`Multi_agent.py`](./Multi_agent.py):  
+
+- **Single Agent** – one reasoning agent solving tasks independently.  
+- **Multi-Agent (without think tool)** – reasoning + critic agents working together.  
+- **Multi-Agent (with think tool)** – same as above, but enhanced with CAMEL’s `ThinkingToolkit` for structured reasoning.  
+
+---
+
+## Collaborators  
+
+- Safoura Banihashemi  
+- Hesam Sheikh Hassani  
+- Mehrega Nazarmohsenifakori  
+
 
 
   
