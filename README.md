@@ -18,7 +18,7 @@ You can access the full project description and methodology [here](Mitigate_bias
 
 ## Dataset  
 
-We use the **BBQ dataset**, a hand-crafted benchmark designed to expose social biases in LLMs.  
+We use the **BBQ dataset** designed to expose social biases in LLMs.  
 
 Each sample in the dataset includes:  
 - **Context** – a short scenario  
